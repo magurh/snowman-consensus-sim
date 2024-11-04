@@ -4,7 +4,7 @@
 
 ## Setup
 
-uv is used for dependency management. To install dependencies, run:
+uv is used for dependency management. To install all dependencies, run:
 ```
 uv sync --all-extras
 ```
