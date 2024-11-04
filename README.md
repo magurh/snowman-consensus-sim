@@ -4,13 +4,13 @@
 
 ## Setup
 
-Poetry is used for dependency management. Whenever new dependencies are added, run:
+uv is used for dependency management. To install dependencies, run:
 ```
-poetry install
+uv sync --all-extras
 ```
-To use Jupyter Lab, set the kernel to the fast-updates-monitoring environment created by poetry:
+To use Jupyter Lab, set-up a kernel:
 ```
-poetry run python -m ipykernel install --user --name=flare-boosting
-poetry run jupyter lab
+uv run python -m ipykernel install --user --name=snowman
+uv run jupyter lab
 ```
-For simply activating the virtual environment, run `poetry shell`. To add new dependencies, use `poetry add <dependency>`.
+For simply activating the virtual environment, run `uv shell`. To add new dependencies, use `uv add <dependency>`.
