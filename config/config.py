@@ -10,6 +10,8 @@ class Config:
     BetaVirtuous: int  # Used for Snowflake and Snowball
     BetaRogue: int  # Used for Snowflake and Snowball
     slush_rounds: int
+    fixed_nodes: int # nodes with fixed preference state
+    off_nodes: int # nodes that update state against majority
 
 
 config = Config(
@@ -21,4 +23,6 @@ config = Config(
     BetaVirtuous=15,
     BetaRogue=20,
     slush_rounds=20,
+    fixed_nodes=0,
+    off_nodes=0,
 )
