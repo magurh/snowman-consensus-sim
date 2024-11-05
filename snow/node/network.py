@@ -1,10 +1,14 @@
 from .node import Node
 
+
 class Network:
-    def __init__(self, nodes):
+    def __init__(
+        self,
+        nodes: list[Node],
+    ) -> None:
         self.nodes = nodes  # List of all nodes in the network
-    
-    def get_distribution(self):
+
+    def get_distribution(self) -> dict:
         """Returns the distribution of states across the network."""
         state_counts = {}
         for node in self.nodes:

@@ -1,17 +1,18 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Config:
     num_nodes: int
     initial_states: list[int]
     algorithm: str  # 'slush', 'snowflake', or 'snowball'
-    K: int          # Number of nodes to sample in each round
+    K: int  # Number of nodes to sample in each round
     Alpha: int
     BetaVirtuous: int  # Used for Snowflake and Snowball
     BetaRogue: int  # Used for Snowflake and Snowball
     slush_rounds: int
-    fixed_nodes: int # nodes with fixed preference state
-    off_nodes: int # nodes that update state against majority
+    fixed_nodes: int  # nodes with fixed preference state
+    off_nodes: int  # nodes that update state against majority
 
 
 config = Config(

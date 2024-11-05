@@ -7,7 +7,7 @@ def slush(
     colors: np.ndarray,
     k_slush: int,
     alpha_slush: int,
-    num_param_nodes: int
+    num_param_nodes: int,
 ) -> tuple[int, int]:
     """
     Centralized Slush protocol implementation
@@ -18,7 +18,7 @@ def slush(
     :param k_slush: Slush protocol parameter
     :param alpha_slush: Slush protocol parameter
     :param num_param_nodes: run algorithm until all but param nodes agree on a state
-    
+
     :return: output of network (0 or 1), number of rounds
     """
     num_rounds = 0
@@ -36,7 +36,7 @@ def slush(
         random_sample_decision = np.sum(
             colors[np.random.choice(num_nodes, size=k_slush, replace=False)]
         )
-        
+
         # Compare with threshold parameter
         if random_sample_decision >= alpha_slush:
             # Readjust sum_colors so we don't have to compute from scratch
@@ -53,8 +53,6 @@ def slush(
     return random_sample_decision, num_rounds
 
 
-
-
 def weighted_slush(
     num_nodes: int,
     num_byz_nodes: int,
@@ -62,7 +60,7 @@ def weighted_slush(
     k_slush: int,
     alpha_slush: np.ndarray,
     num_param_nodes: int,
-    weight_matrix: np.ndarray
+    weight_matrix: np.ndarray,
 ) -> tuple[int, int]:
     """
     Global Slush protocol implementation using weight matrix for local aggregation
@@ -91,8 +89,11 @@ def weighted_slush(
         random_sample = np.random.choice(num_nodes, size=k_slush, replace=False)
 
         # Compute decision of the sample and rescale
-        random_sample_decision = k_slush*np.dot(colors[random_sample], 
-                            weight_matrix[random_sample]) / np.sum(weight_matrix[random_sample])
+        random_sample_decision = (
+            k_slush
+            * np.dot(colors[random_sample], weight_matrix[random_sample])
+            / np.sum(weight_matrix[random_sample])
+        )
 
         if random_sample_decision >= alpha_slush:
             # Readjust sum_colors so we don't have to compute from scratch
@@ -110,6 +111,3 @@ def weighted_slush(
     random_sample_decision = 1 if sum_colors > num_nodes // 2 else 0
 
     return random_sample_decision, num_rounds
-
-
-
