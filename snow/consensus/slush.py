@@ -76,6 +76,7 @@ class SlushNetwork(Network):
             FixedNode(
                 node_id=i,
                 initial_state=initial_states[i],
+                sample_size=sample_size,
             )
             for i in range(honest_nodes, honest_nodes + fixed_nodes)
         ]

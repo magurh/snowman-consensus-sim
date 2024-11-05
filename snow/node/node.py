@@ -19,8 +19,8 @@ class Node:
 class FixedNode(Node):
     """A dishonest node with a fixed preference that never changes."""
 
-    def __init__(self, node_id: int, initial_state: int) -> None:
-        super().__init__(node_id, initial_state)
+    def __init__(self, node_id: int, initial_state: int, sample_size: int) -> None:
+        super().__init__(node_id, initial_state, sample_size)
 
     def update_state(self, _) -> None:
         """Ignores the sampled states and keeps its initial preference."""

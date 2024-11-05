@@ -14,3 +14,9 @@ uv run python -m ipykernel install --user --name=snowman
 uv run jupyter lab
 ```
 For simply activating the virtual environment, run `uv shell`. To add new dependencies, use `uv add <dependency>`.
+
+For formatting and linting use:
+```
+uv run ruff format
+uv run ruff check
+```
