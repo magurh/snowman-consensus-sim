@@ -1,5 +1,3 @@
-import random
-
 from config.config import config
 from snow.consensus.slush import SlushNetwork
 
@@ -19,3 +17,4 @@ class SlushSimulation:
             distribution = self.network.get_distribution()
             print(f"Round {round_num + 1} distribution: {distribution}")
 
+import random
