@@ -1,10 +1,11 @@
 [project]
 name = "snowman-consensus"
 version = "0.1.0"
-description = "Add your description here"
+description = "A repository for simulating parts of the Snowman consensus protocol."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "jupyterlab>=4.3.0",
     "matplotlib>=3.9.2",
     "numpy>=2.1.3",
     "pandas>=2.2.3",
