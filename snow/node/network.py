@@ -16,3 +16,12 @@ class Network:
             state_counts[state] = state_counts.get(state, 0) + 1
 
         return state_counts
+
+    def get_round_distribution(self) -> dict:
+        """Returns the distribution of rounds until convergence."""
+        round_counts = {}
+        for node in self.nodes:
+            total_rounds = node.rounds
+            round_counts[total_rounds] = round_counts.get(total_rounds, 0) + 1
+
+        return round_counts

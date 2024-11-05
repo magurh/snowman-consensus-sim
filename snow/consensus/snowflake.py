@@ -24,9 +24,12 @@ class SnowflakeNode(Node):
         self,
         sampled_states: list[int],
     ) -> None:
-        """Updates the node's preferred state based on quorum and the counter."""
+        """Update preferred state based on quorum and counter."""
         if self.finalized:
             return
+
+        # Update number of rounds parameter
+        self.count_round()
 
         # Count occurrences of each state in the sampled nodes
         state_counts = {
@@ -47,7 +50,7 @@ class SnowflakeNode(Node):
             else:
                 # Change preferred state and reset counter to 1
                 self.preferred_state = majority_state
-                self.counter = 1  # Reset counter to 1 on state change
+                self.counter = 1
 
 
 class SnowflakeNetwork(Network):
@@ -67,7 +70,7 @@ class SnowflakeNetwork(Network):
         beta: int,
         fixed_nodes: int = 0,
         off_nodes: int = 0,
-    ) -> "SnowflakeNetwork":
+    ) -> None:
         """
         Creates and initializes a Snowflake network of nodes with given configuration.
         """
