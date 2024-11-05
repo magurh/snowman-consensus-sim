@@ -34,7 +34,7 @@ The whitepaper also introduces the Avalanche protocol, which is a consensus prot
 
 ## Snowman++
 
-Snowman++ is a linear version of Avalanche currently implemented on all Avalanche chains and subnets, as well as on the Flare Networks. The Snowman++ is a congestion control mechanism available for snowman virtum machines (VMs) -- namely, the protocol introduces a *soft proposer mechanism* which attemots to select a single proposer with the power to issue a block, but opens up block production to every validator if sufficient time has passed without blocks being generated. (see [Avalanche docs](https://github.com/flare-foundation/go-flare/tree/93fd844b1e85366ee9c1c4a3fb9e9399220534cc/avalanchego/vms/proposervm)).
+Snowman++ is a linear version of Avalanche currently implemented on all Avalanche chains and subnets, as well as on the Flare Networks. The Snowman++ is a congestion control mechanism available for snowman virtual machines (VMs) -- namely, the protocol introduces a *soft proposer mechanism* which attemots to select a single proposer with the power to issue a block, but opens up block production to every validator if sufficient time has passed without blocks being generated. (see [Avalanche docs](https://github.com/flare-foundation/go-flare/tree/93fd844b1e85366ee9c1c4a3fb9e9399220534cc/avalanchego/vms/proposervm)).
 
 At a high level, Snowman++ works as follows: 
 - For each block a small list of validators is randomly sampled, which will act as "proposers" for the next block.
