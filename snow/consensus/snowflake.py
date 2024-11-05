@@ -39,7 +39,7 @@ class SnowflakeNode(Node):
         # Determine the majority state and its count
         majority_state, count = max(state_counts.items(), key=lambda item: item[1])
 
-        # Update the node's state and confidence counter
+        # Update the node's state and consecutive_queries
         if count >= self.quorum:
             if majority_state == self.preferred_state:
                 # If the majority matches the preferred state, increase counter

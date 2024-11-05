@@ -6,7 +6,6 @@ class Node:
         self.node_id = node_id
         self.preferred_state = initial_state  # Initial preferred state (0 or 1)
         self.sample_size = sample_size
-        self.confidence = 0  # Confidence counter
         self.finalized = False  # Finalized status
         self.rounds = 0  # number of rounds until convergence
 
