@@ -25,7 +25,7 @@ class SnowflakeSimulation:
 
     def run(self) -> tuple[dict, int]:
         """Run the Snowflake consensus simulation."""
-        print(f"Initial distribution: {self.network.get_distribution()}")
+        # print(f"Initial distribution: {self.network.get_distribution()}")
         round_num = 0
 
         while True:
@@ -46,7 +46,7 @@ class SnowflakeSimulation:
 
             # Check if all nodes have finalized to potentially end the simulation early
             if all(node.finalized for node in self.network.nodes):
-                print("All nodes have finalized their states. Ending simulation.")
+                # print("All nodes have finalized their states. Ending simulation.")
                 break
 
         # Extract rounds taken by each node
