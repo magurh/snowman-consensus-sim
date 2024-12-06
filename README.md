@@ -9,22 +9,21 @@ This repository offers Python implementations of the Snow consensus protocols, c
 A clone of the latest `go-flare` node written in Go is included for testing how parameters affect performance.
 
 
-## go-flare Testing
+## Repository Setup
 
-For testing functionality of `go-flare`, navigate to the desired subdirectory and run:
+### Cloning Submodules
+
+When cloning the repository, one needs to initialize and pull the `go-flare` submodule:
 ```bash
-go test -v -run <TestFunction>
+git clone --recurse-submodules https://github.com/magurh/snowman-consensus.git
 ```
-Here the `-v` flag is optional and is used to ensure that logged outputs are displayed.
-Ensure that general Go guidelines are satisfied:
+Otherwise, the submodule needs to be initialized manually using `git submodule init` from the submodule folder.
+The submodule should point to a fork of `go-flare` available [here](https://github.com/magurh/go-flare).
 
-* Test scripts are of the form `<script>_test.go`.
-* Test functions are of the form `Test<Function>()` and accept a single argument of type `*testing.T`.
-* Use `t.Log` or `t.Logf` for debugging.
+When commiting changes make sure to commit changes inside the submodule, as well as changes in the main repo.
 
 
-
-## Setup
+### Dependencies
 
 uv is used for dependency management. To install all dependencies, run:
 ```bash
@@ -42,3 +41,17 @@ For formatting and linting use:
 uv run ruff format
 uv run ruff check
 ```
+
+
+## go-flare Testing
+
+For testing functionality of `go-flare`, navigate to the desired subdirectory and run:
+```bash
+go test -v -run <TestFunction>
+```
+Here the `-v` flag is optional and is used to ensure that logged outputs are displayed.
+Ensure that general Go guidelines are satisfied:
+
+* Test scripts are of the form `<script>_test.go`.
+* Test functions are of the form `Test<Function>()` and accept a single argument of type `*testing.T`.
+* Use `t.Log` or `t.Logf` for debugging.
