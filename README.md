@@ -8,6 +8,7 @@
 This repository offers Python implementations of the Snow consensus protocols, currently implemented on Avalanche-like blockchains.
 A clone of the latest `go-flare` node written in Go is included for testing how parameters affect performance.
 
+
 ## go-flare Testing
 
 For testing functionality of `go-flare`, navigate to the desired subdirectory and run:
@@ -15,6 +16,12 @@ For testing functionality of `go-flare`, navigate to the desired subdirectory an
 go test -v -run <TestFunction>
 ```
 Here the `-v` flag is optional and is used to ensure that logged outputs are displayed.
+Ensure that general Go guidelines are satisfied:
+
+* Test scripts are of the form `<script>_test.go`.
+* Test functions are of the form `Test<Function>()` and accept a single argument of type `*testing.T`.
+* Use `t.Log` or `t.Logf` for debugging.
+
 
 
 ## Setup
