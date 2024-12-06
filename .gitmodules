@@ -1,0 +1,3 @@
+[submodule "go-flare"]
+	path = go-flare
+	url = https://github.com/flare-foundation/go-flare.git
