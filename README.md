@@ -1,57 +1,24 @@
-[![python](https://img.shields.io/badge/Python-3.11-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
-[![jupyter](https://img.shields.io/badge/Jupyter-Lab-F37626.svg?style=flat&logo=Jupyter)](https://jupyterlab.readthedocs.io/en/stable) 
 ![Go](https://img.shields.io/badge/Golang-1.21.8-%2300ADD8.svg?style=flate&logo=go&logoColor=white)
 
 
-# Consensus Protocols
+# avalanchego v.1.9.x
 
-This repository offers Python implementations of the Snow consensus protocols, currently implemented on Avalanche-like blockchains.
-A clone of the latest `go-flare` node written in Go is included for testing how parameters affect performance.
+## Snowball Consensus
 
+The Snowball consensus has two distinct implementations:
 
-## Repository Setup
-
-### Cloning Submodules
-
-When cloning the repository, one needs to initialize and pull the `go-flare` submodule:
-```bash
-git clone --recurse-submodules https://github.com/magurh/snowman-consensus.git
-```
-Otherwise, the submodule needs to be initialized manually using `git submodule init` from the submodule folder.
-The submodule should point to a fork of `go-flare` available [here](https://github.com/magurh/go-flare).
-
-When commiting changes make sure to commit changes inside the submodule, as well as changes in the main repo.
-
-
-### Dependencies
-
-uv is used for dependency management. To install all dependencies, run:
-```bash
-uv sync --all-extras
-```
-To use Jupyter Lab, set-up a kernel:
-```bash
-uv run python -m ipykernel install --user --name=snowman
-uv run jupyter lab
-```
-For simply activating the virtual environment, run `uv shell`. To add new dependencies, use `uv add <dependency>`.
-
-For formatting and linting use:
-```bash
-uv run ruff format
-uv run ruff check
-```
+* `Flat` implementation: this is the naive implementation described the original whitepaper, which relies on repeated sampling of the network.
+Votes are directly counted for each color, and decisions are independent of each other.
+Practically, this is a direct wrapper of a `nnarySnowball` logic, which works as follows:
+	1. Sample the network.
+	2. Get current preferences from the sample.
+	3. Update preference and confidence counter according to Snowball logic -- if new value becomes preference, confidence resets to 1.
+	4. Repeat steps 1-3 until confidence reaches the `beta` parameter.
+ 
+* `Tree` implementation: this implementation is optimized for handling complex dependencies between different decision choices in the consensus algorithm.
+In this way, the Snowball instance is implemented using a modified Patricia tree, i.e. using a hierarchical structure.
+Each node of this tree corresponds to a decision point (a proposed block).
+Practically, the `Tree` implementation builds on the `unarySnowball` logic, using `unaryNodes` to manage preferences hierarchically.
 
 
-## go-flare Testing
 
-For testing functionality of `go-flare`, navigate to the desired subdirectory and run:
-```bash
-go test -v -run <TestFunction>
-```
-Here the `-v` flag is optional and is used to ensure that logged outputs are displayed.
-Ensure that general Go guidelines are satisfied:
-
-* Test scripts are of the form `<script>_test.go`.
-* Test functions are of the form `Test<Function>()` and accept a single argument of type `*testing.T`.
-* Use `t.Log` or `t.Logf` for debugging.
