@@ -25,6 +25,14 @@ This process continues until a single branch is considered final.
 Ultimately, the `Tree` Snowball implementation in `snowball/tree.go` is specialized to handle multi-branch conflicts elegantly by modeling them as a hierarchy rather than trying to track every color in a `Flat` structure.
 This optimizes the process of merging/pruning and keeps the consensus process efficient.
 
+
 ## Setup
 
 To test and visualize the `Tree` implementation, add the go scripts in `avalanchego/snow/consensus/snowball`, and run the test functions.
+
+## Scripts
+
+* `tree_utils.go`: contains additional functions for testing the `Tree` implementation of the Snowball protocol.
+* `tree_visualization_test.go`: used for visualizing the `Tree` implementaion of the consensus protocol.
+* `tree_poll_test.go`: used for testing differences between the `Flat` and `Tree` implementations, including number of rounds until consensus is reached.
+
