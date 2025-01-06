@@ -160,11 +160,11 @@ cython_debug/
 #.idea/
 
 # Images
-*.jpg
+# *.jpg
 !docs/images/*
 *.pdf
 *.svg
-*.jpeg
+# *.jpeg
 *.png
 *.bmp
 
