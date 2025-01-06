@@ -35,4 +35,3 @@ To test and visualize the `Tree` implementation, add the go scripts in `avalanch
 * `tree_utils.go`: contains additional functions for testing the `Tree` implementation of the Snowball protocol.
 * `tree_visualization_test.go`: used for visualizing the `Tree` implementaion of the consensus protocol.
 * `tree_poll_test.go`: used for testing differences between the `Flat` and `Tree` implementations, including number of rounds until consensus is reached.
-
