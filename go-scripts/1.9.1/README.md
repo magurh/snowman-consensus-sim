@@ -36,8 +36,6 @@ To test and visualize the `Tree` implementation, add the go scripts in `avalanch
 * `tree_visualization_test.go`: used for visualizing the `Tree` implementaion of the consensus protocol.
 * `tree_poll_test.go`: used for testing differences between the `Flat` and `Tree` implementations, including number of rounds until consensus is reached.
 
-![Go](https://img.shields.io/badge/Golang-1.21.8-%2300ADD8.svg?style=flate&logo=go&logoColor=white)
-
 
 
 # Tree Implementation
@@ -86,6 +84,14 @@ Namely, bit indices are defined as:
 where index 7 is the MSB of byte 0.
 
 Now, as poll results come in, the preferences of the nodes can change, as shown in the example below.
+Here, we use the following parameters for the Snowball protocol:
+
+```
+        K:            5,
+        Alpha:        3,
+        BetaVirtuous: 2,
+        BetaRogue:    3
+```
 
 <p align="center">
   <img src="tree_changing.jpg">
