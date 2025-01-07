@@ -35,3 +35,60 @@ To test and visualize the `Tree` implementation, add the go scripts in `avalanch
 * `tree_utils.go`: contains additional functions for testing the `Tree` implementation of the Snowball protocol.
 * `tree_visualization_test.go`: used for visualizing the `Tree` implementaion of the consensus protocol.
 * `tree_poll_test.go`: used for testing differences between the `Flat` and `Tree` implementations, including number of rounds until consensus is reached.
+
+![Go](https://img.shields.io/badge/Golang-1.21.8-%2300ADD8.svg?style=flate&logo=go&logoColor=white)
+
+
+
+# Tree Implementation
+
+
+Snowball's `Tree` implementation uses a modified Patricia tree for deciding on competing blocks.
+The tree structure is defined by the binary form of the 32-byte decisions (i.e. block hashes), as shown in the diagram below.
+
+
+For a single decision, the tree consists of a single block.
+When a competing decision is added, the tree branches into two separate directions.
+At this point there is no much difference between the naive (`Flat`) implementation and the `Tree` implementation.
+These differences become visible when more decisions are added.
+
+<p align="center">
+  <img src="tree.jpg">
+</p>
+
+
+## Types of Nodes
+
+Tree nodes can be either `unaryNode` or `binaryNode`.
+As the name suggests, unary (binary) nodes run unary (binary) versions of the Snowball protocol, implemented in `unarySnowball.go` (and `binarySnowball.go`, respectively).
+Each node of the tree tracks some additional parameters (see `tree.go` for more details).
+For a `unaryNode`, we have:
+* `Preference`: currently preferred decision
+* `DecidedPrefix`: represents the index of the last bit in the prefix that has been decided (i.e., agreed upon by all nodes under this branch).
+* `CommonPrefix`: represents the index of the last bit in the prefix that is shared by all nodes under this branch, even if undecided.
+
+Meanwhile, for a `binaryNode`, we only keep track of preference and a version of `DecidedPrefix`: the index in the id of the choice the binary node is deciding on.
+
+Nodes also track the confidence in the current preference.
+For a `unaryNode`, the confidence tracks the number of successful polls in a row that have returned the current preference.
+Meanwhile, for a `binaryNode`, the confidence is the choice with the largest number of successful polls, where ties are broken by switching choice lazily.
+
+
+## Tree Structure
+
+When adding a new decision, the tree splits at the first differing bit beyond the `DecidedPrefix`.
+This is done using the `FirstDifferenceSubset()` method, defined within `avalanchego/ids/bits.go`.
+Note that the counting is done from the most significant bit (MSB) to the least significant bit (LSB) within a byte.
+Namely, bit indices are defined as:
+
+[7 6 5 4 3 2 1 0] [15 14 13 12 11 10 9 8] ... [255 254 253 252 251 250 249 248]
+
+where index 7 is the MSB of byte 0.
+
+Now, as poll results come in, the preferences of the nodes can change, as shown in the example below.
+
+<p align="center">
+  <img src="tree_changing.jpg">
+</p>
+
+
