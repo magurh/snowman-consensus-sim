@@ -98,3 +98,14 @@ Here, we use the following parameters for the Snowball protocol:
 </p>
 
 
+# Consensus Tests
+
+For testing the Snowball implementation, a dummy network is defined in `avalanchego/snow/consensus/snowball/network_test.go`.
+This `Network` struct allows one to add nodes with initial preferences, and simulates the consensus by running rounds (`Round()`) where a non-finalized node is randomly selected to perform an unbiased poll of the nodes in the network.
+Nodes are added with one of the following methods:
+
+* `AddNode()`: the initial preference is randomly set to one of the colors set during the initialization of the `Network`.
+* `AddNodeSpecificColor()`: this method allows specific initial preferences.
+
+Note also that one can also add `Byzantine` nodes -- as nodes that have a hardcoded preference -- using `AddNodeSpecificColor(&Byzantine{})`, as in `consensus_reversibility_test.go`.
+
