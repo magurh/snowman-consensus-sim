@@ -108,4 +108,5 @@ Nodes are added with one of the following methods:
 * `AddNodeSpecificColor()`: this method allows specific initial preferences.
 
 Note also that one can also add `Byzantine` nodes -- as nodes that have a hardcoded preference -- using `AddNodeSpecificColor(&Byzantine{})`, as in `consensus_reversibility_test.go`.
+These are finalized nodes which will not change their preference.
 
