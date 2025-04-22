@@ -100,7 +100,7 @@ func getConsensusConfig(v *viper.Viper) avalanche.Parameters {
 More details about these parameters can be found in the `Snowflake` structs:
 * `beta` - number of consecutive successful queries required for finalization.
 * `confidence` - number of successful polls in a row that have returned the preference
-* `finalized` – A bool that prevents the state from changing after the required number of consecutive polls has been reached.
+* `finalized` - A bool that prevents the state from changing after the required number of consecutive polls has been reached.
 
 Note: The practical implementation includes two `beta` parameters, `betaVirtuous` (or `beta1`) and `betaRogue` (or `beta2`).
 If there are no known conflicts with an operation, the state can be accepted with a snowflake counter of `betaVirtuous`.
