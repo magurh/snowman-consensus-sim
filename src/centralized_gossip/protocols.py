@@ -71,7 +71,8 @@ def weighted_slush(
     :param k_slush: Slush protocol parameter
     :param alpha_slush: Slush protocol parameter
     :param num_param_nodes: run algorithm until all but param nodes agree on a state
-    :param weight_matrix: a (num_nodes) array containing weights global w_j to be used in local aggregations
+    :param weight_matrix: a (num_nodes) array containing weights global w_j to be used
+        in local aggregations
 
     :return: output of network (0 or 1) and number of rounds taken
     """
