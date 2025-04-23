@@ -1,8 +1,11 @@
+from typing import override
+
 import numpy as np
-from typing import List, override
-from src.node.base import BaseNode
+
 from src.node.adversary import LNode
+from src.node.base import BaseNode
 from src.snow.config import SnowballConfig
+
 from .base import BaseNetwork
 
 
@@ -14,7 +17,7 @@ class LockstepNetwork(BaseNetwork):
     def __init__(
         self,
         node_counts: dict[str, int],
-        initial_preferences: dict[str, List[int | None]],
+        initial_preferences: dict[str, list[int | None]],
         snowball_params: SnowballConfig,
     ) -> None:
         super().__init__(node_counts, initial_preferences, snowball_params)
@@ -24,12 +27,14 @@ class LockstepNetwork(BaseNetwork):
         """Execute a single round of the protocol."""
         self._update_adversary_distributions()
 
-        sampled_preferences: dict[int, List[int | None]] = {}
+        sampled_preferences: dict[int, list[int | None]] = {}
         for node in self.honest_nodes:
             if node.finalized:
                 continue
             peers = self._sample_peers(node)
-            sampled_preferences[node.node_id] = [peer.on_query(node.preference) for peer in peers]
+            sampled_preferences[node.node_id] = [
+                peer.on_query(node.preference) for peer in peers
+            ]
 
         for node in self.honest_nodes:
             if not node.finalized:
@@ -38,7 +43,7 @@ class LockstepNetwork(BaseNetwork):
         self._update_finalization_stats()
         self.round += 1
 
-    def _sample_peers(self, node: BaseNode) -> List[BaseNode]:
+    def _sample_peers(self, node: BaseNode) -> list[BaseNode]:
         """Uniformly Random Sampling."""
         rng = np.random.default_rng()
         return rng.choice(

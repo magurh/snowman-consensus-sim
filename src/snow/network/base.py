@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
-from src.snow.config import SnowballConfig
+
 from src.node import BaseNode, make_node
+from src.snow.config import SnowballConfig
 
 
 class BaseNetwork(ABC):
@@ -13,7 +13,7 @@ class BaseNetwork(ABC):
     def __init__(
         self,
         node_counts: dict[str, int],
-        initial_preferences: dict[str, List[Optional[int]]],
+        initial_preferences: dict[str, list[int | None]],
         snowball_params: SnowballConfig,
     ) -> None:
         """
@@ -26,7 +26,7 @@ class BaseNetwork(ABC):
         """
         self.round: int = 0
         self.snowball_params: SnowballConfig = snowball_params
-        self.nodes: List[BaseNode] = []
+        self.nodes: list[BaseNode] = []
         self.finalized_rounds: dict[int, int] = {}
 
         node_id = 0
@@ -46,7 +46,7 @@ class BaseNetwork(ABC):
                 self.nodes.append(node)
                 node_id += 1
 
-        self.honest_nodes: List[BaseNode] = [n for n in self.nodes if n.is_honest()]
+        self.honest_nodes: list[BaseNode] = [n for n in self.nodes if n.is_honest()]
 
     def _get_distribution(self) -> dict[int, int]:
         """Return the current network preference distribution."""
@@ -93,7 +93,9 @@ class BaseNetwork(ABC):
             and preference distribution.
         """
         return {
-            "rounds_to_partial": self.round if self.check_partial_finalization() else None,
+            "rounds_to_partial": self.round
+            if self.check_partial_finalization()
+            else None,
             "rounds_to_full": self.round if self.check_honest_finalization() else None,
             "per_node_rounds": self.finalized_rounds,
             "distribution": self._get_distribution(),
