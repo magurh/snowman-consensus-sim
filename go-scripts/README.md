@@ -1,6 +1,5 @@
 ![Go](https://img.shields.io/badge/Golang-1.21.8-%2300ADD8.svg?style=flate&logo=go&logoColor=white)
 
-
 # go scripts
 
 This subdirectory contains version controlled go-scripts for testing `go-flare` nodes.
@@ -65,14 +64,13 @@ Defaults to 50.
 
 * `--snow-max-processing (int)?`: Maximum number of processing items to be considered healthy.
 Reports unhealthy if more than this number of items are outstanding.
-The value must be at least 1. 
+The value must be at least 1.
 Defaults to 1024.
 
 * `--snow-max-time-processing (duration)?`: Maximum amount of time an item should be processing and still be healthy.
 Reports unhealthy if there is an item processing for longer than this duration.
 The value must be greater than 0.
 Defaults to 2m.
-
 
 These parameters are referred throughout the repository as follows (imported in `go-flare/avalanchego/config/config.go` using `getCOnsensusConfig()` method):
 
@@ -98,6 +96,7 @@ func getConsensusConfig(v *viper.Viper) avalanche.Parameters {
 ```
 
 More details about these parameters can be found in the `Snowflake` structs:
+
 * `beta` - number of consecutive successful queries required for finalization.
 * `confidence` - number of successful polls in a row that have returned the preference
 * `finalized` - A bool that prevents the state from changing after the required number of consecutive polls has been reached.

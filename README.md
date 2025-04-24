@@ -9,9 +9,10 @@ A clone of the latest `go-flare` node written in Go is included for testing how 
 
 ## Repository Setup
 
-The repository is split into two parts:
+The repository is split into three parts:
 
-* `gossip` module: offers a `python` implementation of the Snow algorithms, useful for analyzing the security of the protocols.
+* `src/snow`: A `python` implementation of the Snow algorithms which mimics a full network of Snow nodes.
+* `src/centralized_gossip`: A very fast `numpy` based implementation of the Snow algorithms, which uses a centralized approach with nodes being simple elements of arrays.
 * `go` scripts: contains various `go` scripts for testing the Snow implementation live on blockchains such as Avalanche, or Flare.
     These scripts can be used to get a step-by-step feeling on how Snowman++ works in practice.
 
@@ -20,10 +21,10 @@ The repository is split into two parts:
 When cloning the repository, one needs to initialize and pull the `go-flare` submodule (if using SSH key for authentication):
 
 ```bash
-git clone --recurse-submodules git@github.com:magurh/snowman-consensus.git
+git clone --recurse-submodules git@github.com:magurh/snowman-consensus-sim.git
 ```
 
-Otherwise, the submodule needs to be initialized manuauthentificationally using `git submodule init` from the submodule folder.
+Otherwise, the submodule needs to be initialized manually using `git submodule init` from the submodule folder.
 The submodule should point to a fork of `go-flare` available [here](https://github.com/magurh/go-flare), which can be done using:
 
 ```bash
@@ -53,9 +54,16 @@ For formatting and linting use:
 ```bash
 uv run ruff format
 uv run ruff check
+uv run pyright
 ```
 
-## go-flare Testing
+Tests can be run with `pytest`:
+
+```bash
+uv run pytest
+```
+
+### go-flare Testing
 
 For testing functionality of `go-flare`, navigate to the desired subdirectory and run:
 
