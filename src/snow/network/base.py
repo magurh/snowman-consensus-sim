@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from src.node import BaseNode, make_node
 from src.snow.config import SnowballConfig
+from src.snow.sampler import Sampler
 
 
 class BaseNetwork(ABC):
@@ -15,6 +16,7 @@ class BaseNetwork(ABC):
         node_counts: dict[str, int],
         initial_preferences: dict[str, list[int | None]],
         snowball_params: SnowballConfig,
+        sampler: Sampler,
     ) -> None:
         """
         Initialize network with a mix of node types and preferences.
@@ -26,6 +28,7 @@ class BaseNetwork(ABC):
         """
         self.round: int = 0
         self.snowball_params: SnowballConfig = snowball_params
+        self.sampler = sampler
         self.nodes: list[BaseNode] = []
         self.finalized_rounds: dict[int, int] = {}
 

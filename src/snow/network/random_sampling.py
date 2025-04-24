@@ -2,8 +2,9 @@ from typing import override
 
 import numpy as np
 
-from src.node import BaseNode, LNode
+from src.node import LNode
 from src.snow.config import SnowballConfig
+from src.snow.sampler import Sampler
 
 from .base import BaseNetwork
 
@@ -18,8 +19,9 @@ class RandomSamplingNetwork(BaseNetwork):
         node_counts: dict[str, int],
         initial_preferences: dict[str, list[int | None]],
         snowball_params: SnowballConfig,
+        sampler: Sampler,
     ) -> None:
-        super().__init__(node_counts, initial_preferences, snowball_params)
+        super().__init__(node_counts, initial_preferences, snowball_params, sampler)
 
     @override
     def run_round(self) -> None:
@@ -31,21 +33,12 @@ class RandomSamplingNetwork(BaseNetwork):
             return
 
         node = np.random.default_rng().choice(unfinished)
-        peers = self._sample_peers(node)
+        peers = self.sampler.sample(node, self.nodes, self.snowball_params.K)
         preferences = [peer.on_query(node.preference) for peer in peers]
         node.snowball_round(preferences)
 
         self._update_finalization_stats()
         self.round += 1
-
-    def _sample_peers(self, node: BaseNode) -> list[BaseNode]:
-        """Uniformly Random Sampling."""
-        rng = np.random.default_rng()
-        return rng.choice(
-            [n for n in self.nodes if n.node_id != node.node_id],
-            size=self.snowball_params.K,
-            replace=False,
-        ).tolist()
 
     def _update_adversary_distributions(self) -> None:
         dist = self._get_distribution()
