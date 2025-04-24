@@ -52,8 +52,46 @@ class HonestNode(BaseNode):
             sampled_preferences: List of preferences sampled.
 
         """
+        # Check if node is finalized or if no preference
         if self.finalized or self.preference is None:
             return
+
+        # Count votes (majority is None only if ALL votes are None)
+        majority_pref, majority_count = self._count_votes(sampled_preferences)
+
+        # Check AlphaPreference quorum (for preference)
+        if majority_count < self.snowball_params.AlphaPreference:
+            self.confidence = 0
+            return
+
+        # Update preference strength
+        self.preference_strength[majority_pref] += 1
+        other = 1 - majority_pref # majority_pref is 0 or 1
+
+        # Check if preference needs to be updated
+        if (
+            self.preference_strength[majority_pref]
+            > self.preference_strength[other]
+        ):
+            self.preference = majority_pref
+
+        # Check if AlphaConfidence majority was reached (for confidence)
+        if majority_count < self.snowball_params.AlphaConfidence:
+            self.confidence = 0
+            return
+
+        if self.last_majority is None or self.last_majority != majority_pref:
+            self.confidence = 0
+
+        # Update last_majority and confidence counter
+        self.last_majority = majority_pref
+        self.confidence += 1
+
+        if self.confidence >= self.snowball_params.Beta:
+            self.finalized = True
+
+    def _count_votes(self, sampled_preferences: list[int | None]) -> tuple[int, int]:
+        """Count votes and returns majority and votes for it."""
 
         vote_counts: dict[int, int] = defaultdict(int)
         for pref in sampled_preferences:
@@ -62,35 +100,9 @@ class HonestNode(BaseNode):
 
         if not vote_counts:
             self.confidence = 0
-            return
+            return (-1, -1) # dummy int majority counts
 
-        majority_pref = max(vote_counts, key=vote_counts.get)
-        majority_count = vote_counts[majority_pref]
+        _pref = max(vote_counts, key=vote_counts.get)
+        _count = vote_counts[_pref]
 
-        if majority_count < self.snowball_params.AlphaPreference:
-            self.confidence = 0
-            return
-
-        self.preference_strength[majority_pref] += 1
-        other = 1 - majority_pref if majority_pref in [0, 1] else None
-
-        if (
-            other is not None
-            and self.preference_strength[majority_pref]
-            > self.preference_strength[other]
-        ):
-            self.preference = majority_pref
-
-        if majority_count < self.snowball_params.AlphaConfidence:
-            self.confidence = 0
-            return
-
-        if self.last_majority != majority_pref:
-            self.confidence = 0
-        else:
-            self.confidence += 1
-
-        self.last_majority = majority_pref
-
-        if self.confidence >= self.snowball_params.Beta:
-            self.finalized = True
+        return _pref, _count
