@@ -41,6 +41,7 @@ class LockstepNetwork(BaseNetwork):
         self.round += 1
 
     def _update_adversary_distributions(self) -> None:
+        """Update the network distribution for LNodes."""
         dist = self._get_distribution()
         for node in self.nodes:
             if isinstance(node, LNode):
