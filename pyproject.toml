@@ -3,7 +3,7 @@ name = "snowman-consensus"
 version = "0.1.0"
 description = "A repository for simulating parts of the Snowman consensus protocol."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "jupyterlab>=4.3.0",
     "matplotlib>=3.9.2",
@@ -18,7 +18,7 @@ dependencies = [
 
 [tool.ruff]
 target-version = "py312"
-extend-exclude = ["notebooks"]
+extend-exclude = ["notebooks", "tests"]
 
 [tool.ruff.lint]
 select = ["ALL"]
