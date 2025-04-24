@@ -57,10 +57,11 @@ uv run ruff check
 uv run pyright
 ```
 
-Tests can be run with `pytest`:
+Tests can be run with `pytest`, potentially with additional arguments for showing logs:
 
 ```bash
 uv run pytest
+uv run pytest -o log_cli=true -o log_level=INFO tests/network_test.py
 ```
 
 ### go-flare Testing

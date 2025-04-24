@@ -1,6 +1,7 @@
 import pytest
-from src.snow.node import HonestNode
+
 from src.snow.config import SnowballConfig
+from src.snow.node import HonestNode
 
 
 @pytest.fixture

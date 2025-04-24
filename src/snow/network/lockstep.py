@@ -29,7 +29,6 @@ class LockstepNetwork(BaseNetwork):
             if node.finalized:
                 continue
             peers = self.sampler.sample(node, self.nodes, self.snowball_params.K)
-            self._sample_peers(node)
             sampled_preferences[node.node_id] = [
                 peer.on_query(node.preference) for peer in peers
             ]

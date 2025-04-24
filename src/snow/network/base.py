@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.snow.config import SnowballConfig
-from src.snow.node import BaseNode, make_node
+from src.snow.node import BaseNode, HonestNode, make_node
 from src.snow.sampler import Sampler
 
 
@@ -48,7 +48,9 @@ class BaseNetwork(ABC):
                 self.nodes.append(node)
                 node_id += 1
 
-        self.honest_nodes: list[BaseNode] = [n for n in self.nodes if n.is_honest()]
+        self.honest_nodes: list[HonestNode] = [
+            n for n in self.nodes if isinstance(n, HonestNode)
+        ]
 
     def _get_distribution(self) -> dict[int, int]:
         """Return the current network preference distribution."""

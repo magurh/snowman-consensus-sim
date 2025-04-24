@@ -8,17 +8,16 @@ from .node import HonestNode
 from .type import TYPES
 
 
-def _raise_pref_error(msg: str) -> None:
-    raise ValueError(msg)
+def _generate_fixed_node(i: int, p: int | None, c: SnowballConfig) -> BaseNode:
+    if p is None:
+        e = "Fixed node must have a preference."
+        raise ValueError(e)
+    return FixedNode(i, p, c)
 
 
 _NODE_CONSTRUCTORS: dict[str, Callable[[int, int | None, SnowballConfig], BaseNode]] = {
     TYPES.honest: lambda i, p, c: HonestNode(i, p, c),
-    TYPES.fixed: lambda i, p, c: FixedNode(
-        i,
-        p if p is not None else _raise_pref_error("Fixed node must have a preference."),
-        c,
-    ),
+    TYPES.fixed: _generate_fixed_node,
     TYPES.offline: lambda i, _, c: OfflineNode(i, c),
     TYPES.dynamic: lambda i, _, c: LNode(i, c),
 }

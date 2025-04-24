@@ -28,4 +28,4 @@ class UniformSampler(Sampler):
         """
         candidates = [n for n in all_nodes if n.node_id != node.node_id]
         rng = np.random.default_rng()
-        return rng.choice(candidates, size=k, replace=False).tolist()
+        return rng.choice(candidates, size=k, replace=False).tolist()  # type: ignore[arg-type]

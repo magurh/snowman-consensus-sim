@@ -30,7 +30,7 @@ class RandomSamplingNetwork(BaseNetwork):
         if not unfinished:
             return
 
-        node = np.random.default_rng().choice(unfinished)
+        node = np.random.default_rng().choice(unfinished)  # type: ignore[arg-type]
         peers = self.sampler.sample(node, self.nodes, self.snowball_params.K)
         preferences = [peer.on_query(node.preference) for peer in peers]
         node.snowball_round(preferences)

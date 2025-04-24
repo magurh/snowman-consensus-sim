@@ -66,13 +66,10 @@ class HonestNode(BaseNode):
 
         # Update preference strength
         self.preference_strength[majority_pref] += 1
-        other = 1 - majority_pref # majority_pref is 0 or 1
+        other = 1 - majority_pref  # majority_pref is 0 or 1
 
         # Check if preference needs to be updated
-        if (
-            self.preference_strength[majority_pref]
-            > self.preference_strength[other]
-        ):
+        if self.preference_strength[majority_pref] > self.preference_strength[other]:
             self.preference = majority_pref
 
         # Check if AlphaConfidence majority was reached (for confidence)
@@ -92,7 +89,6 @@ class HonestNode(BaseNode):
 
     def _count_votes(self, sampled_preferences: list[int | None]) -> tuple[int, int]:
         """Count votes and returns majority and votes for it."""
-
         vote_counts: dict[int, int] = defaultdict(int)
         for pref in sampled_preferences:
             if pref is not None:
@@ -100,9 +96,9 @@ class HonestNode(BaseNode):
 
         if not vote_counts:
             self.confidence = 0
-            return (-1, -1) # dummy int majority counts
+            return (-1, -1)  # dummy int majority counts
 
-        _pref = max(vote_counts, key=vote_counts.get)
+        _pref = max(vote_counts.items(), key=lambda x: x[1])[0]
         _count = vote_counts[_pref]
 
         return _pref, _count

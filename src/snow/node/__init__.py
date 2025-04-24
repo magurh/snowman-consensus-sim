@@ -5,7 +5,6 @@ from .node import HonestNode
 from .type import TYPES
 
 __all__ = [
-    "SnowballConfig",
     "BaseNode",
     "HonestNode",
     "OfflineNode",
