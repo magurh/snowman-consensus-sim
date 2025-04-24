@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 from src.snow.node import BaseNode
 
 
@@ -7,9 +9,7 @@ class Sampler(ABC):
     """Base sampling class."""
 
     @abstractmethod
-    def sample(
-        self, node: BaseNode, all_nodes: list[BaseNode], k: int
-    ) -> list[BaseNode]:
+    def sample(self, node: BaseNode, all_nodes: np.ndarray, k: int) -> np.ndarray:
         """
         Method for sampling k nodes excluding 'node'.
 

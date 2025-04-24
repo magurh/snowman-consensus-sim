@@ -1,6 +1,8 @@
 from collections import defaultdict
 from typing import override
 
+import numpy as np
+
 from src.snow.config import SnowballConfig
 
 from .base import BaseNode
@@ -43,7 +45,7 @@ class HonestNode(BaseNode):
 
     def snowball_round(
         self,
-        sampled_preferences: list[int | None],
+        sampled_preferences: np.ndarray,
     ) -> None:
         """
         Execute one round of the Snowball protocol.
@@ -87,18 +89,17 @@ class HonestNode(BaseNode):
         if self.confidence >= self.snowball_params.Beta:
             self.finalized = True
 
-    def _count_votes(self, sampled_preferences: list[int | None]) -> tuple[int, int]:
+    def _count_votes(self, sampled_preferences: np.ndarray) -> tuple[int, int]:
         """Count votes and returns majority and votes for it."""
-        vote_counts: dict[int, int] = defaultdict(int)
-        for pref in sampled_preferences:
-            if pref is not None:
-                vote_counts[pref] += 1
+        valid = np.array([x for x in sampled_preferences if x is not None])
 
-        if not vote_counts:
+        if valid.size == 0:
             self.confidence = 0
             return (-1, -1)  # dummy int majority counts
 
-        _pref = max(vote_counts.items(), key=lambda x: x[1])[0]
-        _count = vote_counts[_pref]
+        vote_counts = np.bincount(valid, minlength=2)
+
+        _pref = int(np.argmax(vote_counts))
+        _count = int(vote_counts[_pref])
 
         return _pref, _count

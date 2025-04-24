@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 
 from src.snow.config import SnowballConfig
 from src.snow.node import HonestNode
@@ -42,7 +43,7 @@ def test_unsuccessful_query(config):
         snowball_params=config,
     )
     # Only one vote for 1, not enough for AlphaPreference
-    node.snowball_round([1, None, None])
+    node.snowball_round(np.array([1, None, None], dtype=object))
     assert node.confidence == 0
     assert node.preference == 0
     assert node.finalized is False
@@ -57,7 +58,7 @@ def test_finalization(config):
     )
 
     for _ in range(3):  # Needs Beta = 3 rounds
-        node.snowball_round([1, 1, 1])
+        node.snowball_round(np.array([1, 1, 1], dtype=object))
 
     assert node.preference == 1
     assert node.confidence == 3
@@ -73,11 +74,11 @@ def test_preference_switch(config):
     )
 
     # First: 2 rounds of majority = 1
-    node.snowball_round([1, 1, 1])
-    node.snowball_round([1, 1, 1])
+    node.snowball_round(np.array([1, 1, 1], dtype=object))
+    node.snowball_round(np.array([1, 1, 1], dtype=object))
 
     # Then: 1 round where 0 dominates
-    node.snowball_round([0, 0, 0])
+    node.snowball_round(np.array([0, 0, 0], dtype=object))
 
     # preference_strength[1] = 2, [0] = 1 → should still stick with 1
     assert node.preference == 1

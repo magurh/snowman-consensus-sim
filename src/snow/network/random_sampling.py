@@ -26,13 +26,15 @@ class RandomSamplingNetwork(BaseNetwork):
         """Execute a single round of the protocol."""
         self._update_adversary_distributions()
 
-        unfinished = [n for n in self.honest_nodes if not n.finalized]
-        if not unfinished:
+        unfinished = self.honest_nodes[[not n.finalized for n in self.honest_nodes]]
+        if unfinished.size == 0:
             return
 
-        node = np.random.default_rng().choice(unfinished)  # type: ignore[arg-type]
+        rng = np.random.default_rng()
+        node = rng.choice(unfinished)
+
         peers = self.sampler.sample(node, self.nodes, self.snowball_params.K)
-        preferences = [peer.on_query(node.preference) for peer in peers]
+        preferences = np.array([peer.on_query(node.preference) for peer in peers])
         node.snowball_round(preferences)
 
         self._update_finalization_stats()

@@ -11,9 +11,7 @@ class UniformSampler(Sampler):
     """Uniformly random sampling."""
 
     @override
-    def sample(
-        self, node: BaseNode, all_nodes: list[BaseNode], k: int
-    ) -> list[BaseNode]:
+    def sample(self, node: BaseNode, all_nodes: np.ndarray, k: int) -> np.ndarray:
         """
         Method for sampling k nodes excluding 'node'.
 
@@ -26,6 +24,9 @@ class UniformSampler(Sampler):
             A list of sampled nodes.
 
         """
-        candidates = [n for n in all_nodes if n.node_id != node.node_id]
+        all_nodes = np.asarray(all_nodes, dtype=object)
+        mask = np.array([n.node_id != node.node_id for n in all_nodes])
+        candidates = all_nodes[mask]
+
         rng = np.random.default_rng()
-        return rng.choice(candidates, size=k, replace=False).tolist()  # type: ignore[arg-type]
+        return rng.choice(candidates, size=k, replace=False)

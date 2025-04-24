@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 from src.snow.config import SnowballConfig
-from src.snow.node import BaseNode, HonestNode, make_node
+from src.snow.node import HonestNode, make_node
 from src.snow.sampler import Sampler
 
 
@@ -28,7 +30,7 @@ class BaseNetwork(ABC):
         self.round: int = 0
         self.snowball_params: SnowballConfig = snowball_params
         self.sampler = sampler
-        self.nodes: list[BaseNode] = []
+        self.nodes: np.ndarray = np.empty(sum(node_counts.values()), dtype=object)
         self.finalized_rounds: dict[int, int] = {}
 
         node_id = 0
@@ -45,20 +47,20 @@ class BaseNetwork(ABC):
                     msg = f"Error creating node {node_id} of type '{node_type}': {err}"
                     raise ValueError(msg) from err
 
-                self.nodes.append(node)
+                self.nodes[node_id] = node
                 node_id += 1
 
-        self.honest_nodes: list[HonestNode] = [
-            n for n in self.nodes if isinstance(n, HonestNode)
+        self.honest_nodes: np.ndarray = self.nodes[
+            [isinstance(n, HonestNode) for n in self.nodes]
         ]
 
     def _get_distribution(self) -> dict[int, int]:
         """Return the current network preference distribution."""
-        dist: dict[int, int] = {0: 0, 1: 0}
-        for node in self.nodes:
-            if node.preference in (0, 1):
-                dist[node.preference] += 1
-        return dist
+        preferences = np.array(
+            [n.preference for n in self.nodes if n.preference in (0, 1)]
+        )
+        counts = np.bincount(preferences, minlength=2)
+        return {0: int(counts[0]), 1: int(counts[1])}
 
     def _update_finalization_stats(self) -> None:
         """Update finalized round records for honest nodes."""
@@ -74,7 +76,7 @@ class BaseNetwork(ABC):
             True if partial finalization is reached.
 
         """
-        finalized = [n for n in self.honest_nodes if n.finalized]
+        finalized = self.honest_nodes[[n.finalized for n in self.honest_nodes]]
         return len(finalized) > len(self.honest_nodes) // 2
 
     def check_honest_finalization(self) -> bool:
