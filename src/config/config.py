@@ -3,8 +3,10 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
+    """General configuration."""
+
     num_nodes: int
-    K: int  # Number of nodes to sample in each round
+    K: int
     AlphaPreference: int
     AlphaConfidence: int
     Beta: int

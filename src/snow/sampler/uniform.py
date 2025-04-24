@@ -2,13 +2,13 @@ from typing import override
 
 import numpy as np
 
-from src.node import BaseNode
+from src.snow.node import BaseNode
 
 from .base import Sampler
 
 
 class UniformSampler(Sampler):
-    """Uniformly random sampling"""
+    """Uniformly random sampling."""
 
     @override
     def sample(
@@ -24,6 +24,7 @@ class UniformSampler(Sampler):
 
         Returns:
             A list of sampled nodes.
+
         """
         candidates = [n for n in all_nodes if n.node_id != node.node_id]
         rng = np.random.default_rng()

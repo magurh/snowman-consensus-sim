@@ -1,15 +1,12 @@
 from abc import ABC, abstractmethod
 
-from src.node import BaseNode, make_node
 from src.snow.config import SnowballConfig
+from src.snow.node import BaseNode, make_node
 from src.snow.sampler import Sampler
 
 
 class BaseNetwork(ABC):
-    """
-    Abstract base class for a Snowball node network.
-    Handles node initialization and finalization metrics.
-    """
+    """Abstract base class for a Snowball node network."""
 
     def __init__(
         self,
@@ -25,6 +22,8 @@ class BaseNetwork(ABC):
             node_counts: Dict mapping node type to count.
             initial_preferences: Dict mapping node type to list of preferences.
             snowball_params: Snowball protocol parameters.
+            sampler: chosen sampler.
+
         """
         self.round: int = 0
         self.snowball_params: SnowballConfig = snowball_params
@@ -60,9 +59,7 @@ class BaseNetwork(ABC):
         return dist
 
     def _update_finalization_stats(self) -> None:
-        """
-        Update per-node finalized round records for honest nodes.
-        """
+        """Update finalized round records for honest nodes."""
         for node in self.honest_nodes:
             if node.finalized and node.node_id not in self.finalized_rounds:
                 self.finalized_rounds[node.node_id] = self.round
@@ -73,6 +70,7 @@ class BaseNetwork(ABC):
 
         Returns:
             True if partial finalization is reached.
+
         """
         finalized = [n for n in self.honest_nodes if n.finalized]
         return len(finalized) > len(self.honest_nodes) // 2
@@ -83,6 +81,7 @@ class BaseNetwork(ABC):
 
         Returns:
             True if full finalization is reached.
+
         """
         return all(n.finalized for n in self.honest_nodes)
 
@@ -94,6 +93,7 @@ class BaseNetwork(ABC):
             Dict with finalization rounds,
             per-node finalized rounds,
             and preference distribution.
+
         """
         return {
             "rounds_to_partial": self.round

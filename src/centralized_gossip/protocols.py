@@ -9,9 +9,7 @@ def slush(
     alpha_slush: int,
     num_param_nodes: int,
 ) -> tuple[int, int]:
-    """
-    Centralized Slush protocol implementation.
-    """
+    """Centralized Slush protocol implementation."""
     rng = np.random.default_rng()
     num_rounds = 0
     sum_colors = np.sum(colors)
@@ -49,9 +47,7 @@ def weighted_slush(
     num_param_nodes: int,
     weight_matrix: np.ndarray,
 ) -> tuple[int, int]:
-    """
-    Global Slush protocol implementation using weight matrix for local aggregation.
-    """
+    """Slush implementation using weighted local aggregation."""
     rng = np.random.default_rng()
     num_rounds = 0
     sum_colors = np.sum(colors)

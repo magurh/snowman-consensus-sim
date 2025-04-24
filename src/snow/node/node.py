@@ -17,7 +17,6 @@ class HonestNode(BaseNode):
         snowball_params: SnowballConfig,
     ) -> None:
         """Initialize an honest node."""
-
         super().__init__(node_id, initial_preference, snowball_params)
         self.confidence: int = 0
         self.preference_strength: dict[int, int] = defaultdict(int)
@@ -28,13 +27,13 @@ class HonestNode(BaseNode):
     def on_query(self, peer_preference: int | None) -> int | None:
         """
         Respond with this node's current preference.
-        If uninitialized, adopt the peer's.
 
         Args:
             peer_preference (Optional[int]): The querying peer's preference.
 
         Returns:
             Optional[int]: This node's current preference.
+
         """
         if self.preference is None:
             self.preference = peer_preference
@@ -51,6 +50,7 @@ class HonestNode(BaseNode):
 
         Args:
             sampled_preferences: List of preferences sampled.
+
         """
         if self.finalized or self.preference is None:
             return

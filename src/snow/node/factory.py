@@ -1,10 +1,11 @@
 from collections.abc import Callable
 
-from src.node.adversary import FixedNode, LNode, OfflineNode
-from src.node.base import BaseNode
-from src.node.honest import HonestNode
-from src.node.type import TYPES
 from src.snow.config import SnowballConfig
+
+from .adversary import FixedNode, LNode, OfflineNode
+from .base import BaseNode
+from .node import HonestNode
+from .type import TYPES
 
 
 def _raise_pref_error(msg: str) -> None:
@@ -37,6 +38,7 @@ def make_node(
 
     Returns:
         A BaseNode instance.
+
     """
     try:
         constructor = _NODE_CONSTRUCTORS[node_type]

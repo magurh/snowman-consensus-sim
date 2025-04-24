@@ -18,6 +18,8 @@ class BaseNode(ABC):
         Args:
             node_id: Unique identifier for the node.
             initial_preference: The node's initial preference (0, 1, or None).
+            snowball_params: snowball configuration.
+
         """
         self.node_id: int = node_id
         self.preference: int | None = initial_preference
@@ -27,13 +29,7 @@ class BaseNode(ABC):
 
     @abstractmethod
     def on_query(self, peer_preference: int | None) -> int | None:
-        """
-        Respond to a query from a peer.
-        """
-
-    @abstractmethod
-    def is_honest(self) -> bool:
-        """Indicates if the node is honest (default: False)."""
+        """Respond to a query from a peer."""
 
     def update_snow_params(self, snowball_params: SnowballConfig) -> None:
         """Update Snowball parameters."""

@@ -1,16 +1,14 @@
 from typing import override
 
-from src.node.adversary import LNode
 from src.snow.config import SnowballConfig
+from src.snow.node import LNode
 from src.snow.sampler import Sampler
 
 from .base import BaseNetwork
 
 
 class LockstepNetwork(BaseNetwork):
-    """
-    Executes synchronous Snowball rounds for honest non-finalized nodes.
-    """
+    """Executes synchronous Snowball rounds for honest nodes."""
 
     def __init__(
         self,

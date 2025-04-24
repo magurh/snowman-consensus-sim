@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.node import BaseNode
+from src.snow.node import BaseNode
 
 
 class Sampler(ABC):
@@ -20,4 +20,5 @@ class Sampler(ABC):
 
         Returns:
             A list of sampled nodes.
+
         """

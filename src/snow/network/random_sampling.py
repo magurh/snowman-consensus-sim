@@ -2,17 +2,15 @@ from typing import override
 
 import numpy as np
 
-from src.node import LNode
 from src.snow.config import SnowballConfig
+from src.snow.node import LNode
 from src.snow.sampler import Sampler
 
 from .base import BaseNetwork
 
 
 class RandomSamplingNetwork(BaseNetwork):
-    """
-    Execute one Snowball round for a single, random, non-finalized honest node.
-    """
+    """Execute one Snowball round for a single honest node."""
 
     def __init__(
         self,
