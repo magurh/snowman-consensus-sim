@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.snow.config import SnowballConfig
+from src.config import SnowballConfig
 
 
 class BaseNode(ABC):

@@ -1,6 +1,6 @@
 from typing import override
 
-from src.snow.config import SnowballConfig
+from src.config import SnowballConfig
 
 from .base import BaseNode
 from .type import TYPES

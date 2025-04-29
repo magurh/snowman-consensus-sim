@@ -1,6 +1,6 @@
 import pytest
 
-from src.snow.config import SnowballConfig
+from src.config import SnowballConfig
 from src.snow.node import FixedNode, LNode, OfflineNode
 
 

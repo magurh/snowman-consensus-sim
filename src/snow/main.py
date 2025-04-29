@@ -1,9 +1,9 @@
-from src.snow.config import SimConfig, SnowballConfig
+from src.config import SimConfig, SnowballConfig
 from src.snow.network import LockstepNetwork
 from src.snow.node import TYPES
 from src.snow.sampler import UniformSampler
 from src.snow.simulation import run_simulation
-from src.snow.utils import saver
+from src.utils import saver
 
 
 def start() -> None:

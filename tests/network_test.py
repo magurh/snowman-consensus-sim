@@ -1,7 +1,7 @@
 import pytest
 import logging
 
-from src.snow.config import SnowballConfig
+from src.config import SnowballConfig
 from src.snow.network import LockstepNetwork, RandomSamplingNetwork
 from src.snow.sampler import UniformSampler
 from src.snow.node import TYPES

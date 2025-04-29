@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from src.snow.config import SnowballConfig
+from src.config import SnowballConfig
 from src.snow.node import HonestNode, make_node
 from src.snow.sampler import Sampler
 

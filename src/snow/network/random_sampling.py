@@ -2,7 +2,7 @@ from typing import override
 
 import numpy as np
 
-from src.snow.config import SnowballConfig
+from src.config import SnowballConfig
 from src.snow.node import LNode
 from src.snow.sampler import Sampler
 

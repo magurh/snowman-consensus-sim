@@ -1,6 +1,6 @@
 from tqdm import trange
 
-from src.snow.config import SimConfig
+from src.config import SimConfig
 from src.snow.network import BaseNetwork
 from src.snow.sampler import Sampler
 

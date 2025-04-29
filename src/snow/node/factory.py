@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from src.snow.config import SnowballConfig
+from src.config import SnowballConfig
 
 from .adversary import FixedNode, LNode, OfflineNode
 from .base import BaseNode
