@@ -6,7 +6,7 @@ The snow gossip protocols are deterministic protocols based on repeated sampling
 We provide two `python` implementations, as follows:
 
 * `src/snow`: A `python` implementation of the Snow algorithms which mimics a full network of Snow nodes, somewhat similar to the `go` implementation of `go-flare` nodes.
-* `src/centralized_gossip`: A very fast `numpy` based implementation of the Snow algorithms, which uses a centralized approach with nodes being simple elements of arrays.
+* `src/frostbyte`: A very fast `numpy` based implementation of the Snow algorithms, which uses a centralized approach with nodes being simple elements of arrays.
 
 ## Gossip protocols
 

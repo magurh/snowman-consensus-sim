@@ -12,7 +12,7 @@ A clone of the latest `go-flare` node written in Go is included for testing how 
 The repository is split into three parts:
 
 * `src/snow`: A `python` implementation of the Snow algorithms which mimics a full network of Snow nodes.
-* `src/centralized_gossip`: A very fast `numpy` based implementation of the Snow algorithms, which uses a centralized approach with nodes being simple elements of arrays.
+* `src/frostbyte`: A very fast `numpy` based implementation of the Snow algorithms, which uses a centralized approach with nodes being simple elements of arrays.
 * `go` scripts: contains various `go` scripts for testing the Snow implementation live on blockchains such as Avalanche, or Flare.
     These scripts can be used to get a step-by-step feeling on how Snowman++ works in practice.
 
