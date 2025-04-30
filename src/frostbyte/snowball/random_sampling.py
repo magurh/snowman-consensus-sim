@@ -1,8 +1,10 @@
-from dataclasses import dataclass
 
 import numpy as np
 
 from src.config import SnowballConfig
+
+from .sampler import SnowballSampler
+from .state import SnowballState
 
 
 def snowball_rs(
@@ -43,7 +45,7 @@ def snowball_rs(
     curr_lpref = 0 if count_0 < (num_honest - count_0) else 1
 
     # Bundle data into a SnowballState
-    state = _SnowballState(
+    state = SnowballState(
         preferences=preferences,
         strengths=strengths,
         count_0=count_0,
@@ -51,7 +53,7 @@ def snowball_rs(
         curr_lpref=curr_lpref,
     )
     # Initialize sampler
-    sampler = _SnowballSampler(
+    sampler = SnowballSampler(
         K=config.K,
         num_nodes=num_nodes,
         lnode_start=lnode_start,
@@ -117,73 +119,3 @@ def snowball_rs(
         "rounds_to_partial": rounds_to_partial,
         "rounds_to_full": rounds if finality == "full" else None,
     }
-
-
-@dataclass
-class _SnowballSampler:
-    """Holds the fixed state needed to sample peers."""
-
-    K: int
-    num_nodes: int
-    lnode_start: int
-    rng: np.random.Generator
-
-    def sample_and_count(
-        self,
-        node_id: int,
-        preferences: np.ndarray,
-        curr_lpref: int,
-    ) -> tuple[int, int]:
-        """
-        Sample K peers and count how many votes for 0 vs. 1.
-
-        Args:
-            node_id: The index of the honest node doing the sampling.
-            preferences: 1d array of preferences.
-            curr_lpref: preference of LNodes.
-
-        Returns:
-            (zeros, ones) giving the count of 0-votes and 1-votes.
-
-        """
-        # 1) Draw from [0..num_nodes-2], then shift ≥node_id up by 1
-        u = self.rng.integers(0, self.num_nodes - 1, size=self.K)
-        sampled = u + (u >= node_id)
-
-        # 2) Get prefs, overriding L-nodes
-        sampled_prefs = preferences[sampled]
-        lmask = sampled >= self.lnode_start
-        if lmask.any():
-            sampled_prefs[lmask] = curr_lpref
-
-        # 3) Count 1's vs 0's
-        ones = int(sampled_prefs.sum())
-        zeros = self.K - ones
-        return zeros, ones
-
-
-@dataclass
-class _SnowballState:
-    """Holds all the mutable Snowball state."""
-
-    preferences: np.ndarray
-    strengths: np.ndarray
-    count_0: int
-    num_honest: int
-    curr_lpref: int
-
-    def honest_flip(self, node_id: int, majority_pref: int) -> None:
-        """Flip node preference (in-place) if needed."""
-        other = 1 - majority_pref
-
-        # Only flip if this pref strength strictly exceeds the other.
-        if self.strengths[node_id, majority_pref] > self.strengths[node_id, other]:
-            old = int(self.preferences[node_id])
-            if old != majority_pref:
-                # Flip the honest node
-                self.preferences[node_id] = majority_pref
-                # Adjust zero count
-                self.count_0 += -1 if old == 0 else +1
-
-        # Recompute LNode scalar
-        self.curr_lpref = 0 if self.count_0 < (self.num_honest - self.count_0) else 1
