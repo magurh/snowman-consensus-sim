@@ -1,8 +1,7 @@
 import numpy as np
 
 from src.config import SnowballConfig
-
-from .state import SnowballState
+from src.frostbyte.snowball.state import SnowballState
 
 
 def snowball_ls(
@@ -44,83 +43,84 @@ def snowball_ls(
     count_0 = np.sum(preferences[:num_honest] == 0)
 
     # LNode responses
-    curr_lpref = 0 if count_0 < (num_honest - count_0) else 1
-    preferences[lnode_start:] = curr_lpref
+    lnode_pref = 0 if count_0 < (num_honest - count_0) else 1
+    preferences[lnode_start:] = lnode_pref
 
     # Initialize SnowballState instance
     state = SnowballState(
+        snowball_config=config,
         preferences=preferences,
         strengths=strengths,
+        confidences=confidences,
+        finalized=finalized,
         count_0=count_0,
         num_honest=num_honest,
-        curr_lpref=curr_lpref,
+        lnode_pref=lnode_pref,
+        finalized_count=0,
     )
 
     rounds, rounds_to_partial = 0, None
     half = num_nodes // 2
-    node_ids = np.arange(num_honest)  # honest indices
+    honest_ids = np.arange(num_honest)  # honest indices
 
     # Run Snowball algorithm
     while True:
         # 1) Partial finality check
-        fin_count = int(finalized[:num_honest].sum())
-        if fin_count > half:
+        if state.finalized_count > half:
             if rounds_to_partial is None:
                 rounds_to_partial = rounds
             if finality == "partial":
                 break
 
         # 2) Check active nodes
-        active = node_ids[~finalized[:num_honest]]
+        active = honest_ids[~state.finalized[:num_honest]]
         act_size = active.size
         if act_size == 0:
             break
 
-        # 3) Sample K peers in batch for each active node
-        u = rng.integers(0, num_nodes - 1, size=(act_size, config.K))
-        rows = active[:, None]
-        sampled = u + (u >= rows)
+        # 3) Sample K peers without replacement for each active node
+        peer_samples = np.empty((act_size, config.K), dtype=int)
+
+        for idx, node_id in enumerate(active):
+            # draw K distinct peers from [0..N-2]
+            u = rng.choice(num_nodes - 1, size=config.K, replace=False)
+            # shift those ≥ node_id up by 1 to skip self
+            peer_samples[idx] = u + (u >= node_id)
 
         # 4) Gather their preferences
-        sampled_prefs = preferences[sampled]  # shape (M, K)
+        sampled_prefs = preferences[peer_samples]  # shape (M, K)
 
         # 5) Count zeros/ones
         ones = sampled_prefs.sum(axis=1).astype(int)
         zeros = config.K - ones
 
         # 6) Alpha Preference stage
-        maj_pref = (ones > zeros).astype(np.uint8)
-        maj_count = np.where(ones > zeros, ones, zeros)
-        ok_pref_mask = maj_count >= config.AlphaPreference
+        majority_pref = (ones > zeros).astype(np.uint8)
+        majority_count = np.where(ones > zeros, ones, zeros)
+        pref_pass_mask = majority_count >= config.AlphaPreference
 
         # 7) Update strengths for those that pass
-        idx = active[ok_pref_mask]
-        mp = maj_pref[ok_pref_mask]
-        strengths[idx, mp] += 1
+        passed_ids = active[pref_pass_mask]
+        passed_prefs = majority_pref[pref_pass_mask]
+        strengths[passed_ids, passed_prefs] += 1
 
         # 8) Check honest node flips
-        strg_maj = strengths[idx, mp]
-        strg_other = strengths[idx, 1 - mp]
-        flip_mask = strg_maj > strg_other
+        strg_maj = strengths[passed_ids, passed_prefs]
+        strg_other = strengths[passed_ids, 1 - passed_prefs]
+        flip_mask = (strg_maj > strg_other) & (preferences[passed_ids] != passed_prefs)
 
         # 9) Apply honest flips
-        state.batch_flip(idx[flip_mask], mp[flip_mask])
+        to_flip = passed_ids[flip_mask]
+        new_prefs = passed_prefs[flip_mask]
+        state.batch_flip(to_flip, new_prefs)
 
-        # 10) Alpha Confidence stage confidence reset
-        ok_conf_mask = maj_count >= config.AlphaConfidence
-        # Reset those who fail, increment those who pass
-        confidences[active[~ok_conf_mask]] = 0
-        pass_conf = active[ok_conf_mask]
-        confidences[pass_conf] += 1
-
-        # 11) finalize any whose confidence >= Beta
-        just_fin = confidences[pass_conf] >= config.Beta
-        finalized[pass_conf[just_fin]] = True
+        # 10) Update confidence:
+        state.batch_confidence_update(active, majority_pref, majority_count)
 
         rounds += 1
 
     return {
-        "honest_distribution": {0: count_0, 1: num_honest - count_0},
+        "honest_distribution": {0: state.count_0, 1: num_honest - state.count_0},
         "finalized_honest": int(finalized[:num_honest].sum()),
         "rounds_to_partial": rounds_to_partial,
         "rounds_to_full": rounds if finality == "full" else None,

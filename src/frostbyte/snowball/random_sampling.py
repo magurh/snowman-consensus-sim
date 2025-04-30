@@ -111,8 +111,8 @@ def snowball_rs(
 
     return {
         "honest_distribution": {
-            0: count_0,
-            1: num_honest - count_0,
+            0: state.count_0,
+            1: num_honest - state.count_0,
         },
         "finalized_honest": int(np.sum(finalized[:num_honest])),
         "rounds_to_partial": rounds_to_partial,
