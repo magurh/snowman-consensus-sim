@@ -66,9 +66,8 @@ def snowball_ls(
     # Run Snowball algorithm
     while True:
         # 1) Partial finality check
-        if state.finalized_count > half:
-            if rounds_to_partial is None:
-                rounds_to_partial = rounds
+        if (state.finalized_count > half) and (rounds_to_partial is None):
+            rounds_to_partial = rounds
             if finality == "partial":
                 break
 

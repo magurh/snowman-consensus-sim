@@ -47,16 +47,3 @@ def test_custom_finalization(config):
 
     assert result["honest_distribution"] == {0: 7, 1: 0}
     assert result["finalized_honest"] == 7
-
-# def test_partial_finality_consistency(config, monkeypatch):
-#     # seed RNG differently
-#     seed = 54321
-#     monkeypatch.setattr(np.random, 'default_rng', lambda: np.random.default_rng(seed))
-
-#     node_types = np.array([5, 5, 9])
-#     initial_prefs = np.random.randint(0, 2, size=9, dtype=np.uint8)
-
-#     res_ls = snowball_ls(config, node_types, initial_prefs.copy(), finality="partial")
-#     res_rs = snowball_rs(config, node_types, initial_prefs.copy(), finality="partial")
-
-#     assert res_ls["rounds_to_partial"] == res_rs["rounds_to_partial"]

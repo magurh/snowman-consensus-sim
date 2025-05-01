@@ -19,9 +19,10 @@ class SnowballState:
     lnode_pref: int
     finalized_count: int
 
-    def honest_flip(self, node_id: int, majority_pref: int) -> None:
+    def honest_flip(self, node_id: int, majority_pref: int) -> bool:
         """Flip single node preference if needed."""
         other = 1 - majority_pref
+        flipped = False
 
         # Only flip if this pref strength strictly exceeds the other.
         if self.strengths[node_id, majority_pref] > self.strengths[node_id, other]:
@@ -31,9 +32,44 @@ class SnowballState:
                 self.preferences[node_id] = majority_pref
                 # Adjust zero count
                 self.count_0 += -1 if old == 0 else +1
+                # Update flag
+                flipped = True
+                # Recompute LNode scalar
+                self.lnode_pref = 0 if self.count_0 < (self.num_honest - self.count_0) else 1
 
-        # Recompute LNode scalar
-        self.lnode_pref = 0 if self.count_0 < (self.num_honest - self.count_0) else 1
+        return flipped
+
+    def confidence_update(
+        self,
+        node_id: int,
+        maj_count: int,
+        flipped: bool,
+    ) -> None:
+        """
+        Update confidence parameter and finalize single node.
+
+        Confidence increased if:
+          1) maj_count >= alpha_conf, and
+          2) maj_pref == old preferences (flipped == True)
+
+        Args:
+            node_id: current node
+            maj_pref: sampled majority preference
+            maj_count: sampled majority count
+            flipped: bool indicating whether state flipped
+
+        """
+        if maj_count < self.snowball_config.AlphaConfidence:
+            self.confidences[node_id] = 0
+            return
+
+        if flipped:
+            self.confidences[node_id] = 1
+        else:
+            self.confidences[node_id] += 1
+            if self.confidences[node_id] >= self.snowball_config.Beta:
+                self.finalized[node_id] = True
+                self.finalized_count += 1
 
     def batch_flip(self, to_flip: np.ndarray, new_prefs: np.ndarray) -> None:
         """

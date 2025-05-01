@@ -2,8 +2,8 @@ import numpy as np
 
 from src.config import SnowballConfig
 
-from .sampler import SnowballSampler
-from .state import SnowballState
+from src.frostbyte.snowball.sampler import SnowballSampler
+from src.frostbyte.snowball.state import SnowballState
 
 
 def snowball_rs(
@@ -31,25 +31,27 @@ def snowball_rs(
     rng = np.random.default_rng()
 
     # Save locally number of nodes
-    num_honest, num_nodes, lnode_start = node_types[0], node_types[-1], node_types[-2]
-
-    # Set up arrays for describing nodes
-    preferences = initial_preferences.copy()
-    confidences = np.zeros(num_nodes, dtype=np.uint8)
-    finalized = np.zeros(num_nodes, dtype=bool)
-    strengths = np.zeros((num_nodes, 2), dtype=np.uint8)
-    count_0 = np.sum(preferences[:num_honest] == 0)
+    num_honest, num_nodes, lnode_start = (
+        node_types[0],
+        node_types[-1],
+        node_types[-2],
+    )
 
     # LNode responses
-    curr_lpref = 0 if count_0 < (num_honest - count_0) else 1
+    count_0=np.sum(initial_preferences[:num_honest] == 0)
+    lnode_pref = 0 if count_0 < (num_honest - count_0) else 1
 
     # Bundle data into a SnowballState
     state = SnowballState(
-        preferences=preferences,
-        strengths=strengths,
+        snowball_config=config,
+        preferences=initial_preferences.copy(),
+        strengths=np.zeros((num_nodes, 2), dtype=np.uint8),
+        confidences=np.zeros(num_nodes, dtype=np.uint8),
+        finalized=np.zeros(num_nodes, dtype=bool),
         count_0=count_0,
         num_honest=num_honest,
-        curr_lpref=curr_lpref,
+        lnode_pref=lnode_pref,
+        finalized_count=0,
     )
     # Initialize sampler
     sampler = SnowballSampler(
@@ -64,48 +66,43 @@ def snowball_rs(
     # Run Snowball algorithm
     while True:
         # Select honest unfinished nodes
-        active = np.where(~finalized[:num_honest])[0]
+        active = np.where(~state.finalized[:num_honest])[0]
 
         if active.size == 0:
             break  # full honest finalization reached
 
         # If only partial finalization is sought:
-        if finalized[:num_honest].sum() > num_nodes // 2 and rounds_to_partial is None:
+        if state.finalized_count > num_nodes // 2 and rounds_to_partial is None:
             rounds_to_partial = rounds
             if finality == "partial":
                 # Break if network is partially finalized
                 break
 
-        for node_id in active:
-            # Sample network and parse responses
-            zeros, ones = sampler.sample_and_count(
-                node_id,
-                state.preferences,
-                state.curr_lpref,
+        # Choose node, sample network, and parse responses
+        node_id = sampler.choose_node(active)
+        majority_pref, majority_count = sampler.sample_and_count(
+            node_id,
+            state.preferences,
+            state.lnode_pref,
+        )
+
+        if majority_count < config.AlphaPreference:
+            state.confidences[node_id] = 0
+            continue
+
+        state.strengths[node_id, majority_pref] += 1
+
+        # Update network preferences and distribution
+        flipped_state = state.honest_flip(
+            node_id,
+            majority_pref,
+        )
+
+        state.confidence_update(
+            node_id,
+            majority_count,
+            flipped_state,
             )
-
-            if max(zeros, ones) < config.AlphaPreference:
-                confidences[node_id] = 0
-                continue
-
-            majority_pref = 1 if ones > zeros else 0
-            state.strengths[node_id, majority_pref] += 1
-
-            # Update network preferences and distribution
-            state.honest_flip(
-                node_id,
-                majority_pref,
-            )
-
-            if max(zeros, ones) < config.AlphaConfidence:
-                confidences[node_id] = 0
-                continue
-
-            # Update confidence
-            confidences[node_id] += 1
-
-            if confidences[node_id] >= config.Beta:
-                finalized[node_id] = True
 
         rounds += 1
 
@@ -114,7 +111,14 @@ def snowball_rs(
             0: state.count_0,
             1: num_honest - state.count_0,
         },
-        "finalized_honest": int(np.sum(finalized[:num_honest])),
+        "finalized_honest": state.finalized_count,
         "rounds_to_partial": rounds_to_partial,
         "rounds_to_full": rounds if finality == "full" else None,
     }
+
+if __name__ == "__main__":
+    config = SnowballConfig(K=3, AlphaPreference=2, AlphaConfidence=2, Beta=5)
+
+    node_types = np.array([5, 5, 5])
+    initial_prefs = np.array([0, 0, 0, 0, 1], dtype=np.uint8)
+    result = snowball_rs(config, node_types, initial_prefs, finality="full")
