@@ -46,6 +46,7 @@ class SnowballSampler:
         lmask = sampled >= self.lnode_start
         if lmask.any():
             sampled_prefs[lmask] = lnode_pref
+        print(f"Node: {node_id}, sample: {sampled_prefs}")
 
         # 3) Count 1s vs 0s
         ones = int(sampled_prefs.sum())
