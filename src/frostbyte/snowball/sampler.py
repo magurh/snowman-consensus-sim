@@ -17,10 +17,7 @@ class SnowballSampler:
         active_nodes: np.ndarray,
     ) -> int:
         """Randomly select a node from active nodes."""
-
-        node_id = self.rng.choice(active_nodes)
-
-        return node_id
+        return self.rng.choice(active_nodes)
 
     def sample_and_count(
         self,
@@ -61,5 +58,35 @@ class SnowballSampler:
         else:
             majority_pref = 0
             majority_count = zeros
+
+        return majority_pref, majority_count
+
+    def batch_sampler(
+        self,
+        active_nodes: np.ndarray,
+        preferences: np.ndarray,
+        lnode_pref: int,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Sample K peers for all active nodes and parse votes."""
+        peer_samples = np.empty((active_nodes.size, self.K), dtype=int)
+
+        for idx, node_id in enumerate(active_nodes):
+            # draw K distinct peers from [0..N-2]
+            u = self.rng.choice(self.num_nodes - 1, size=self.K, replace=False)
+            # shift those ≥ node_id up by 1 to skip self
+            peer_samples[idx] = u + (u >= node_id)
+
+        # Gather preferences and override LNode values
+        sampled_prefs = preferences[peer_samples]  # shape (M, K)
+        lnode_mask = peer_samples >= self.lnode_start
+        sampled_prefs[lnode_mask] = lnode_pref
+
+        # Count zeros/ones
+        ones = sampled_prefs.sum(axis=1).astype(int)
+        zeros = self.K - ones
+
+        # Return preferences and counts
+        majority_pref = (ones > zeros).astype(np.uint8)
+        majority_count = np.where(ones > zeros, ones, zeros)
 
         return majority_pref, majority_count

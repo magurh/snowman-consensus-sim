@@ -35,7 +35,9 @@ class SnowballState:
                 # Update flag
                 flipped = True
                 # Recompute LNode scalar
-                self.lnode_pref = 0 if self.count_0 < (self.num_honest - self.count_0) else 1
+                self.lnode_pref = (
+                    0 if self.count_0 < (self.num_honest - self.count_0) else 1
+                )
 
         return flipped
 
@@ -100,10 +102,7 @@ class SnowballState:
         self.lnode_pref = 0 if self.count_0 < (self.num_honest - self.count_0) else 1
 
     def batch_confidence_update(
-        self,
-        active: np.ndarray,
-        maj_pref: np.ndarray,
-        maj_count: np.ndarray,
+        self, active: np.ndarray, maj_count: np.ndarray, to_flip: np.ndarray
     ) -> None:
         """
         Update confidence parameters and finalize nodes.
@@ -116,24 +115,26 @@ class SnowballState:
             active: array of active nodes
             maj_pref: array of sampled majority preference
             maj_count: array of sampled majority counts
+            to_flip: subset of active nodes that changed pref
 
         """
-        # Grab the current honest-node preferences
-        current_prefs = self.preferences[active]
-        # Build mask of who really confirms the color
-        confirm_mask = (maj_count >= self.snowball_config.AlphaConfidence) & (
-            maj_pref == current_prefs
-        )
+        # Unflipped nodes
+        unflipped_mask = ~np.isin(active, to_flip)
 
-        # Reset all failures
-        self.confidences[active[~confirm_mask]] = 0
+        # Build mask of who really confirms the color
+        confirm_mask = maj_count[unflipped_mask] >= self.snowball_config.AlphaConfidence
 
         # Bump only the survivors
-        survivors = active[confirm_mask]
+        survivors = active[unflipped_mask][confirm_mask]
         self.confidences[survivors] += 1
 
-        # Finalize anyone who just Beta in confidence
-        finalized_mask = self.confidences[survivors] >= self.snowball_config.Beta
-        self.finalized[survivors[finalized_mask]] = True
+        non_survivors = np.setdiff1d(active, survivors, assume_unique=True)
+        self.confidences[non_survivors] = 0
 
-        self.finalized_count += int(finalized_mask[: self.num_honest].sum())
+        # Finalize anyone who just Beta in confidence
+        to_finalize = survivors[
+            self.confidences[survivors] >= self.snowball_config.Beta
+        ]
+        self.finalized[to_finalize] = True
+
+        self.finalized_count += len(to_finalize)

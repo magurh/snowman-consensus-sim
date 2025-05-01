@@ -1,7 +1,6 @@
 import numpy as np
 
 from src.config import SnowballConfig
-
 from src.frostbyte.snowball.sampler import SnowballSampler
 from src.frostbyte.snowball.state import SnowballState
 
@@ -38,7 +37,7 @@ def snowball_rs(
     )
 
     # LNode responses
-    count_0=np.sum(initial_preferences[:num_honest] == 0)
+    count_0 = np.sum(initial_preferences[:num_honest] == 0)
     lnode_pref = 0 if count_0 < (num_honest - count_0) else 1
 
     # Bundle data into a SnowballState
@@ -102,7 +101,7 @@ def snowball_rs(
             node_id,
             majority_count,
             flipped_state,
-            )
+        )
 
         rounds += 1
 
@@ -115,6 +114,7 @@ def snowball_rs(
         "rounds_to_partial": rounds_to_partial,
         "rounds_to_full": rounds if finality == "full" else None,
     }
+
 
 if __name__ == "__main__":
     config = SnowballConfig(K=3, AlphaPreference=2, AlphaConfidence=2, Beta=5)
