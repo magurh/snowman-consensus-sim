@@ -33,7 +33,7 @@ def snowball():
       continue
 
     majorityCount = sampledPreferenceCounts[sampledMajorityColor]
-    if majorityCount < α:
+    if majorityCount < alphaPreference:
       confidence = 0 // No one got an alpha majority
       continue
 
@@ -41,6 +41,10 @@ def snowball():
     minorityColor = otherColor(majorityColor)
     if preferenceStrength[majorityColor] > preferenceStrength[minorityColor]:
       currentColor = majorityColor // Update the color we report to other peers
+
+    if majorityCount < alphaConfidence:
+      confidence = 0 // No one got an alphaConfidence majority
+      continue
 
     if majorityColor != lastMajorityColor:
       confidence = 0
