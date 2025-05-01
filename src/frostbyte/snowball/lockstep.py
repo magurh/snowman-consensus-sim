@@ -46,7 +46,7 @@ def snowball_ls(
         preferences=initial_preferences.copy(),
         strengths=np.zeros((num_nodes, 2), dtype=np.uint8),
         confidences=np.zeros(num_nodes, dtype=np.uint8),
-        last_majority = initial_preferences[:num_honest].copy(),
+        last_majority=initial_preferences[:num_honest].copy(),
         finalized=np.zeros(num_nodes, dtype=bool),
         count_0=count_0,
         num_honest=num_honest,

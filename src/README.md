@@ -5,8 +5,49 @@
 The snow gossip protocols are deterministic protocols based on repeated samplings of the network.
 We provide two `python` implementations, as follows:
 
-* `src/snow`: A `python` implementation of the Snow algorithms which mimics a full network of Snow nodes, somewhat similar to the `go` implementation of `go-flare` nodes.
-* `src/frostbyte`: A very fast `numpy` based implementation of the Snow algorithms, which uses a centralized approach with nodes being simple elements of arrays.
+* `snow`: A `python` implementation of the Snow algorithms which mimics a full network of Snow nodes, somewhat similar to the `go` implementation of `go-flare` nodes.
+* `frostbyte`: A very fast `numpy` based implementation of the Snow algorithms, which uses a centralized approach with nodes being simple elements of arrays.
+
+The protocols are based on the , described in the [Split Alpha into AlphaPreferences and AlphConfidence](https://github.com/ava-labs/avalanchego/pull/2125) update of the `avalanchego` client.
+Namely, the distributed implementation of the Snowball protocoll within our `snow` module can be roughly described as follows:
+
+```bash
+def onQuery(peer, peerColor):
+  respond(peer, currentColor) // Send our current color to the peer, which might be ⊥
+  if currentColor = ⊥:
+    currentColor = peerColor // If we do not currently have a color, adopt the peer's color
+
+def snowball():
+  confidence = 0
+  preferenceStrength = {Red:0, Blue:0}
+  while confidence < β:
+    if currentColor = ⊥:
+      continue // Wait until we hear of a color from a peer
+
+    sampledNodes = sample(N, k) // Sample k nodes from the network
+    sampledPreferences = [query(node, currentColor) ∀ node ∈ sampledNodes]
+    sampledPreferenceCounts = count(sampledPreferences) // Map each color to the number of times it was sampled
+    sampledMajorityColor = argmax(sampledPreferenceCounts)
+    if sampledMajorityColor ∉ {Red, Blue}: // The network is still initializing its preferences
+      confidence = 0
+      continue
+
+    majorityCount = sampledPreferenceCounts[sampledMajorityColor]
+    if majorityCount < α:
+      confidence = 0 // No one got an alpha majority
+      continue
+
+    preferenceStrength[sampledMajorityColor]++
+    minorityColor = otherColor(majorityColor)
+    if preferenceStrength[majorityColor] > preferenceStrength[minorityColor]:
+      currentColor = majorityColor // Update the color we report to other peers
+
+    if majorityColor != lastMajorityColor:
+      confidence = 0
+    lastMajorityColor = majorityColor
+    confidence++
+  currentColor = lastMajorityColor
+```
 
 ## Gossip protocols
 

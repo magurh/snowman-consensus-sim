@@ -25,8 +25,8 @@ class SnowballState:
         other = 1 - majority_pref
 
         # Only flip if this pref strength strictly exceeds the other.
-        if ((self.preferences[node_id] != majority_pref)
-            and (self.strengths[node_id, majority_pref] > self.strengths[node_id, other])
+        if (self.preferences[node_id] != majority_pref) and (
+            self.strengths[node_id, majority_pref] > self.strengths[node_id, other]
         ):
             # Flip the honest node
             self.preferences[node_id] = majority_pref
@@ -53,6 +53,7 @@ class SnowballState:
         Args:
             node_id: current node
             maj_count: sampled majority count
+            maj_pref: sampled majority pref
 
         """
         # If majority is below AlphaConfidence, reset confidence
@@ -104,7 +105,10 @@ class SnowballState:
         self.lnode_pref = 0 if self.count_0 < (self.num_honest - self.count_0) else 1
 
     def batch_confidence_update(
-        self, active: np.ndarray, maj_pref: np.ndarray, maj_count: np.ndarray,
+        self,
+        active: np.ndarray,
+        maj_pref: np.ndarray,
+        maj_count: np.ndarray,
     ) -> None:
         """
         Update confidence parameters and finalize nodes.
@@ -120,9 +124,8 @@ class SnowballState:
 
         """
         # Build mask of who really confirms the color
-        confirm_mask = (
-            (maj_count >= self.snowball_config.AlphaConfidence)
-            & (maj_pref == self.last_majority[active])
+        confirm_mask = (maj_count >= self.snowball_config.AlphaConfidence) & (
+            maj_pref == self.last_majority[active]
         )
 
         # Bump only the survivors
