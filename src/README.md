@@ -8,10 +8,10 @@ We provide two `python` implementations, as follows:
 * `snow`: A `python` implementation of the Snow algorithms which mimics a full network of Snow nodes, somewhat similar to the `go` implementation of `go-flare` nodes.
 * `frostbyte`: A very fast `numpy` based implementation of the Snow algorithms, which uses a centralized approach with nodes being simple elements of arrays.
 
-The protocols are based on the , described in the [Split Alpha into AlphaPreferences and AlphConfidence](https://github.com/ava-labs/avalanchego/pull/2125) update of the `avalanchego` client.
+The protocols are based on the [Split Alpha into AlphaPreferences and AlphConfidence](https://github.com/ava-labs/avalanchego/pull/2125) update of the `avalanchego` client.
 Namely, the distributed implementation of the Snowball protocoll within our `snow` module can be roughly described as follows:
 
-```bash
+```text
 def onQuery(peer, peerColor):
   respond(peer, currentColor) // Send our current color to the peer, which might be ⊥
   if currentColor = ⊥:
@@ -52,6 +52,9 @@ def snowball():
     confidence++
   currentColor = lastMajorityColor
 ```
+
+A more detailed description of Snowman++ can be found within the `go-scripts` subfolder of this repository.
+This includes various step-by-step testing of the protocol.
 
 ## Gossip protocols
 
