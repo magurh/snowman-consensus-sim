@@ -82,7 +82,7 @@ class SnowballState:
 
         Args:
             to_flip: 1D array of honest-node indices to flip
-            new_prefs: same-length array of 0/1 majority prefERENCES
+            new_prefs: same-length array of 0/1 majority preferences
 
         """
         if to_flip.size == 0:
@@ -97,15 +97,14 @@ class SnowballState:
         loss = int(np.sum((old == 0) & (new_prefs == 1)))  # zeros lost
         self.count_0 += int(gain - loss)
 
-        # Perform the flips and reset confidences
+        # Perform the flips
         self.preferences[to_flip] = new_prefs
-        self.confidences[to_flip] = 0
 
         # Recompute L-node scalar
         self.lnode_pref = 0 if self.count_0 < (self.num_honest - self.count_0) else 1
 
     def batch_confidence_update(
-        self, active: np.ndarray, maj_count: np.ndarray, to_flip: np.ndarray
+        self, active: np.ndarray, maj_pref: np.ndarray, maj_count: np.ndarray,
     ) -> None:
         """
         Update confidence parameters and finalize nodes.
@@ -118,26 +117,27 @@ class SnowballState:
             active: array of active nodes
             maj_pref: array of sampled majority preference
             maj_count: array of sampled majority counts
-            to_flip: subset of active nodes that changed pref
 
         """
-        # Unflipped nodes
-        unflipped_mask = ~np.isin(active, to_flip)
-
         # Build mask of who really confirms the color
-        confirm_mask = maj_count[unflipped_mask] >= self.snowball_config.AlphaConfidence
+        confirm_mask = (
+            (maj_count >= self.snowball_config.AlphaConfidence)
+            & (maj_pref == self.last_majority[active])
+        )
 
         # Bump only the survivors
-        survivors = active[unflipped_mask][confirm_mask]
+        survivors = active[confirm_mask]
         self.confidences[survivors] += 1
 
         non_survivors = np.setdiff1d(active, survivors, assume_unique=True)
-        self.confidences[non_survivors] = 0
+        self.confidences[non_survivors] = 1
 
         # Finalize anyone who just Beta in confidence
         to_finalize = survivors[
             self.confidences[survivors] >= self.snowball_config.Beta
         ]
         self.finalized[to_finalize] = True
-
         self.finalized_count += len(to_finalize)
+
+        # Update last_majority for all active
+        self.last_majority[active] = maj_pref

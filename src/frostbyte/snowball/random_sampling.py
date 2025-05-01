@@ -67,9 +67,6 @@ def snowball_rs(
     while True:
         # Select honest unfinished nodes
         active = np.where(~state.finalized[:num_honest])[0]
-        print(f"Active nodes: {active}")
-        print(f"Preferences: {state.preferences}")
-        print(f"LNode response: {state.lnode_pref} \n")
         if active.size == 0:
             break  # full honest finalization reached
 
@@ -117,11 +114,3 @@ def snowball_rs(
         "rounds_to_partial": rounds_to_partial,
         "rounds_to_full": rounds if finality == "full" else None,
     }
-
-
-if __name__ == "__main__":
-    config = SnowballConfig(K=3, AlphaPreference=2, AlphaConfidence=2, Beta=5)
-
-    node_types = np.array([5, 5, 8])
-    initial_prefs = np.array([0, 0, 0, 0, 0, 1, 1, 1], dtype=np.uint8)
-    result = snowball_rs(config, node_types, initial_prefs, finality="full")

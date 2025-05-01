@@ -9,7 +9,7 @@ from src.frostbyte.snowball import snowball_ls, snowball_rs
 @pytest.fixture
 def config():
     """Define an instance of SnowballConfig."""
-    return SnowballConfig(K=3, AlphaPreference=2, AlphaConfidence=2, Beta=5)
+    return SnowballConfig(K=3, AlphaPreference=3, AlphaConfidence=3, Beta=5)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -27,7 +27,7 @@ def test_basic_termination(config):
 def test_preference_flip(config):
     # Six honest nodes only
     node_types = np.array([6, 6, 6])
-    initial_prefs = np.array([0, 0, 0, 1, 0, 1], dtype=np.uint8)
+    initial_prefs = np.array([0, 0, 0, 0, 1, 1], dtype=np.uint8)
     result = snowball_ls(config, node_types, initial_prefs, finality="full")
 
     assert result["honest_distribution"] == {0: 6, 1: 0}
