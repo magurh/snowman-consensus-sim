@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 
 from src.config import SnowballConfig
 from src.snow.node import HonestNode

@@ -1,13 +1,15 @@
-import pytest
 import logging
+
+import pytest
 
 from src.config import SnowballConfig
 from src.snow.network import LockstepNetwork, RandomSamplingNetwork
-from src.snow.sampler import UniformSampler
 from src.snow.node import TYPES
+from src.snow.sampler import UniformSampler
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
 
 @pytest.fixture
 def simple_config() -> SnowballConfig:
@@ -23,6 +25,7 @@ def honest_setup():
     }, {
         TYPES.honest: [0] * 10 + [1] * 10  # split votes
     }
+
 
 def test_lockstep_round(simple_config, honest_setup):
     """Test lockstep network."""
@@ -42,6 +45,7 @@ def test_lockstep_round(simple_config, honest_setup):
     # Run a single round
     net.run_round()
     logger.info(f"New distribution: {net._get_distribution()}")
+
 
 def test_lockstep_finalization(simple_config, honest_setup):
     """Test lockstep network finalization."""
